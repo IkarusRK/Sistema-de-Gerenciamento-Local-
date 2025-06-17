@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lanchonete - Sistema de Insumos [ADM]</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cor-vermelha: #d9232d;
+            --cor-amarela: #ffc107;
+            --cor-cinza-claro: #f8f9fa;
+            --cor-texto: #343a40;
+            --cor-azul: #007BFF;
+        }
+        body { font-family: 'Nunito', sans-serif;
+		margin: 0;
+		padding: 0;
+		background-color: var(--cor-cinza-claro);
+		color: var(--cor-texto); }
+		
+        .container { max-width: 900px;
+			margin: 0 auto;
+			padding: 20px; }
+			
+        .header { background-color: var(--cor-vermelha);
+			color: white; padding: 20px;
+			text-align: center;
+			border-bottom: 5px solid var(--cor-amarela); }
+			
+        .header img { width: 120px;
+			height: 120px;
+			border-radius: 50%;
+			border: 4px solid white;
+			margin-bottom: 10px; }
+			
+        .header h1 { margin: 0;
+			font-size: 2.5em;
+			font-weight: 800;
+			text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+			
+        .card { background-color: white;
+			padding: 25px;
+			border-radius: 12px;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+			margin-top: 30px; }
+			
+        h2 { color: var(--cor-texto);
+			border-bottom: 3px solid var(--cor-amarela);
+			padding-bottom: 10px;
+			font-size: 1.8em; }
+        
+		
+		/* --- botões :D --- */
+		button { color: white;
+			border: none;
+			padding: 12px 20px;
+			border-radius: 8px;
+			cursor: pointer;
+			margin: 5px;
+			transition: all 0.3s;
+			font-weight: 700;
+			text-transform: uppercase;
+			font-size: 0.9em; }
+			
+        button:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        button.btn-listar { background-color: #6c757d; }
+        button.btn-adicionar { background-color: var(--cor-amarela); color: var(--cor-texto); }
+        button.btn-remover { background-color: var(--cor-vermelha); }
+        button.btn-editar { background-color: var(--cor-azul); }
+		/* --- Fim dos botões :D --- */
+		
+		
+        form label { display: block;
+			margin-bottom: 15px;
+			font-weight: 700; }
+		
+        form input { width: calc(100% - 24px);
+			padding: 12px;
+			margin-top: 5px;
+			border: 1px solid #ccc;
+			border-radius: 8px; }
+        
+		#lista-insumos { min-height: 50px; }
+		
+        .insumo-item { display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 15px;
+			border-bottom: 1px solid #eee;
+			animation: fadeIn 0.5s; }
+        
+		.insumo-item:last-child { border-bottom: none; }
+        .insumo-item .buttons { display: flex; gap: 10px; }
+		
+        .loader { border: 5px solid #f3f3f3;
+			border-top: 5px solid var(--cor-amarela);
+			border-radius: 50%;
+			width: 40px;
+			height: 40px;
+			animation: spin 1s linear infinite;
+			margin: 20px auto; }
+        
+		@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+		@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+		.notification { position: fixed;
+			bottom: 20px;
+			right: 20px;
+			padding: 15px 25px;
+			border-radius: 8px;
+			color: white; font-weight:
+			700; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+			visibility: hidden;
+			opacity: 0;
+			transition: all 0.5s;
+			transform: translateY(20px);
+			z-index: 1000;
+			display: flex;
+			align-items: center;
+			gap: 15px; }
+        
+		.notification.show { visibility: visible;
+			opacity: 1;
+			transform: translateY(0); }
+			
+        .notification.success { background-color: #28a745; }
+        .notification.error { background-color: #dc3545; }
+        .notification .icon { font-size: 1.5em; }
+		
+        .modal-overlay { position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0,0,0,0.6);
+			display: none;
+			justify-content: center;
+			align-items: center;
+			z-index: 2000; }
+        
+		.modal-overlay.show { display: flex; }
+		
+        .modal-content { background: white; 
+			padding: 30px;
+			border-radius: 8px;
+			width: 90%;
+			max-width: 500px;
+			box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+			
+        .modal-content h2 { margin-top: 0; }
+		
+        /* --- ESTILO PARA A BARRA DE BUSCA --- */
+		.gerenciamento-header {
+			display: flex;
+		    justify-content: space-between;
+		    align-items: center;
+		    gap: 20px; }
+
+		.gerenciamento-header .botoes-acao {
+			display: flex;
+		    gap: 5px; }
+
+		.busca-container { 
+			display: flex;
+		    gap: 10px;
+		    flex-grow: 1; }
+			
+		.busca-container input { 
+			flex-grow: 1; 
+		    margin: 0; }
+		        
+		.busca-container button { 
+			margin: 0;
+		    white-space: nowrap; }
+			
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <img src="https://i.postimg.cc/vZymg6Pd/image.png" alt="Logo Pastel Paulista" onerror="this.onerror=null;this.src='https://placehold.co/150x150/d9232d/FFFFFF?text=Logo';">
+        <h1>Lanchonete - Administração de insumos</h1>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Gerenciamento de Insumos</h2>
+            <button class="btn-listar" onclick="listarInsumos()">Listar Todos</button>
+            <button class="btn-listar" onclick="limparTela()">Limpar Lista</button>
+            
+            <!-- --- NOVA BARRA DE BUSCA --- -->
+            <div class="busca-container">
+                <input type="text" id="inputBusca" placeholder="Digite o nome do insumo para buscar...">
+                <button class="btn-editar" onclick="executarBusca()">Buscar</button>
+            </div>
+
+            <div id="lista-insumos"></div>
+        </div>
+
+        <div class="card">
+            <h2>Adicionar Novo Insumo</h2>
+            <form id="formAdicionarInsumo">
+                <label>Nome: <input type="text" id="nome_insumo" required></label>
+                <label>Fornecedor: <input type="text" id="fornecedor"></label>
+                <label>Medida: <input type="text" id="medida" required></label>
+                <label>Valor Inicial: <input type="number" step="0.01" id="valor_inicial" required></label>
+                <button type="button" class="btn-adicionar" id="btnAdicionar" onclick="adicionarInsumo()">Adicionar Insumo</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="notification-toast" class="notification"></div>
+    <div id="modalEdicao" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Editar Insumo</h2>
+            <form id="formEditarInsumo">
+                <input type="hidden" id="edit_id_insumo">
+                <label>Nome: <input type="text" id="edit_nome_insumo" required></label>
+                <label>Fornecedor: <input type="text" id="edit_fornecedor"></label>
+                <label>Medida: <input type="text" id="edit_medida" required></label>
+                <label>Valor Inicial: <input type="number" step="0.01" id="edit_valor_inicial" required></label>
+                <button type="button" class="btn-adicionar" onclick="salvarAlteracoes()">Salvar Alterações</button>
+                <button type="button" class="btn-listar" onclick="fecharModalEdicao()">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification-toast');
+            const icon = type === 'success' ? '✅' : '❌';
+            notification.innerHTML = `<span class="icon">${icon}</span> ${message}`;
+            notification.className = `notification show ${type}`;
+            setTimeout(() => {
+                notification.className = notification.className.replace('show', '');
+            }, 3000);
+        }
+
+        function renderizarLista(data) {
+            const listaContainer = document.getElementById('lista-insumos');
+            listaContainer.innerHTML = ''; 
+            if (data.length === 0) {
+                listaContainer.innerHTML = '<p>Nenhum insumo encontrado.</p>';
+                return;
+            }
+            data.forEach(insumo => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'insumo-item'; 
+                const textoSpan = document.createElement('span');
+                textoSpan.textContent = `ID: ${insumo.codInsumo} - Nome: ${insumo.nomeInsumo} - Fornecedor: ${insumo.fornecedor || 'N/A'}`;
+                const botoesDiv = document.createElement('div');
+                botoesDiv.className = 'buttons';
+                
+                const botaoEditar = document.createElement('button');
+                botaoEditar.textContent = 'Editar';
+                botaoEditar.className = 'btn-editar';
+                botaoEditar.onclick = () => abrirModalEdicao(insumo);
+
+                const botaoRemover = document.createElement('button');
+                botaoRemover.textContent = 'Remover';
+                botaoRemover.className = 'btn-remover';
+                botaoRemover.onclick = () => removerInsumo(insumo.codInsumo);
+
+                botoesDiv.appendChild(botaoEditar);
+                botoesDiv.appendChild(botaoRemover);
+                itemDiv.appendChild(textoSpan);
+                itemDiv.appendChild(botoesDiv);
+                listaContainer.appendChild(itemDiv);
+            });
+        }
+
+        // --- FUNÇÕES ATUALIZADAS E NOVAS ---
+        function listarInsumos() {
+            const listaContainer = document.getElementById('lista-insumos');
+            listaContainer.innerHTML = '<div class="loader"></div>';
+            fetch('/insumos')
+                .then(response => response.json())
+                .then(data => renderizarLista(data)); // <-- Agora só chama a função de renderizar
+        }
+        
+        function executarBusca() {
+            const termoBusca = document.getElementById('inputBusca').value;
+            if (!termoBusca) {
+                listarInsumos(); // Se a busca for vazia, lista todos
+                return;
+            }
+            
+            const listaContainer = document.getElementById('lista-insumos');
+            listaContainer.innerHTML = '<div class="loader"></div>';
+            
+            // Usamos encodeURIComponent para tratar espaços e caracteres especiais na busca
+            fetch(`/insumos/buscar?nome=${encodeURIComponent(termoBusca)}`)
+                .then(response => response.json())
+                .then(data => renderizarLista(data)) // <-- Também reutiliza a função de renderizar
+                .catch(error => showNotification('Erro ao realizar a busca.', 'error'));
+        }
+
+        // O resto do seu JavaScript (limparTela, removerInsumo, etc.) continua igual...
+        function limparTela() { document.getElementById('lista-insumos').innerHTML = ''; }
+        function abrirModalEdicao(insumo) { document.getElementById('edit_id_insumo').value = insumo.codInsumo; document.getElementById('edit_nome_insumo').value = insumo.nomeInsumo; document.getElementById('edit_fornecedor').value = insumo.fornecedor; document.getElementById('edit_medida').value = insumo.medida; document.getElementById('edit_valor_inicial').value = insumo.valorInicial; document.getElementById('modalEdicao').classList.add('show'); }
+        function fecharModalEdicao() { document.getElementById('modalEdicao').classList.remove('show'); }
+        function salvarAlteracoes() { const id = document.getElementById('edit_id_insumo').value; const insumoAtualizado = { codInsumo: id, nomeInsumo: document.getElementById('edit_nome_insumo').value, fornecedor: document.getElementById('edit_fornecedor').value, medida: document.getElementById('edit_medida').value, valorInicial: parseFloat(document.getElementById('edit_valor_inicial').value) }; fetch(`/insumos/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(insumoAtualizado) }).then(response => { if (!response.ok) throw new Error('Falha ao atualizar o insumo.'); return response.json(); }).then(() => { fecharModalEdicao(); showNotification('Insumo atualizado com sucesso!'); listarInsumos(); }).catch(error => showNotification(error.message, 'error')); }
+        function removerInsumo(id) { if (!confirm(`Tem certeza que deseja remover o insumo de ID ${id}?`)) return; fetch(`/insumos/${id}`, { method: 'DELETE' }).then(response => { if (!response.ok) throw new Error('Erro ao remover o insumo.'); showNotification('Insumo removido com sucesso!'); listarInsumos(); }).catch(error => showNotification(error.message, 'error')); }
+        function adicionarInsumo() { const btn = document.getElementById('btnAdicionar'); btn.disabled = true; const insumo = { nomeInsumo: document.getElementById('nome_insumo').value, fornecedor: document.getElementById('fornecedor').value, medida: document.getElementById('medida').value, valorInicial: parseFloat(document.getElementById('valor_inicial').value) }; fetch('/insumos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(insumo) }).then(response => { if (!response.ok) throw new Error("Erro ao adicionar insumo."); return response.json(); }).then(() => { showNotification('Insumo adicionado com sucesso!'); listarInsumos(); document.getElementById('formAdicionarInsumo').reset(); }).catch(error => showNotification(error.message, 'error')).finally(() => { btn.disabled = false; }); }
+    </script>
+</body>
+</html>

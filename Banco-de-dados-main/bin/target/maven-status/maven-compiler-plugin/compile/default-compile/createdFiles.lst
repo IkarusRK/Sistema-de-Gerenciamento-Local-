@@ -1,0 +1,5 @@
+br\com\pastelaria\PastelariaSpringApplication.class
+br\com\pastelaria\InsumoController.class
+br\com\pastelaria\InsumoDAO.class
+br\com\pastelaria\InsumoRepository.class
+br\com\pastelaria\Insumo.class
